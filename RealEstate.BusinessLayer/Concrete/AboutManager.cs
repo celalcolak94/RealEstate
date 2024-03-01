@@ -1,41 +1,56 @@
-﻿using RealEstate.BusinessLayer.Abstract;
+﻿using AutoMapper;
+using RealEstate.BusinessLayer.Abstract;
 using RealEstate.DataAccessLayer.Abstract;
+using RealEstate.DtoLayer.AboutDtos;
 using RealEstate.EntityLayer.Entities;
 
 namespace RealEstate.BusinessLayer.Concrete
 {
-    internal class AboutManager : IAboutService
+    public class AboutManager : IAboutService
     {
         private readonly IAboutDal _aboutDal;
+        private readonly IMapper _mapper;
 
-        public AboutManager(IAboutDal aboutDal)
+        public AboutManager(IAboutDal aboutDal, IMapper mapper)
         {
             _aboutDal = aboutDal;
+            _mapper = mapper;
         }
 
-        public Task CreateAsync(About entity)
+        public async Task CreateAsync(AboutDto entity)
         {
-            throw new NotImplementedException();
+            var value = _mapper.Map<About>(entity);
+            await _aboutDal.CreateAsync(value);
         }
 
-        public Task<List<About>> GetAllAsync()
+        public async Task<List<AboutDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var value = await _aboutDal.GetAllAsync();
+            return _mapper.Map<List<AboutDto>>(value);
         }
 
-        public Task<About> GetByIdAsync(int id)
+        public async Task<AboutDto> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var value = await _aboutDal.GetByIdAsync(id);
+            return _mapper.Map<AboutDto>(value);
         }
 
-        public Task RemoveAsync(About entity)
+        public async Task RemoveAsync(AboutDto entity)
         {
-            throw new NotImplementedException();
+            var value = _mapper.Map<About>(entity);
+            await _aboutDal.RemoveAsync(value);
         }
 
-        public Task UpdateAsync(About entity)
+        public async Task UpdateAsync(AboutDto entity)
         {
-            throw new NotImplementedException();
+            var value = await _aboutDal.GetByIdAsync(entity.AboutID);
+
+            if (value == null)
+            {
+                throw new Exception("Entity not found");
+            }
+            _mapper.Map(entity, value);
+            await _aboutDal.UpdateAsync(value);
         }
     }
 }
